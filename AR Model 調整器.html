@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <title>AR Model 調整器</title>
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.css" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden; background: transparent;
+    }
+    #controls {
+      position: fixed; bottom: 10px; left: 10px; background: rgba(255,255,255,0.8);
+      padding: 10px; border-radius: 6px; max-width: 320px;
+      font-family: sans-serif; font-size: 14px;
+      user-select: none;
+      z-index: 9999;
+    }
+    #controls label {
+      display: block; margin: 6px 0 2px;
+    }
+    #controls input[type=range] {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <a-scene 
+    mindar-image="imageTargetSrc: cat-marker.mind; autoStart: true; uiLoading: no;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true"
+    embedded
+    renderer="colorManagement: true, physicallyCorrectLights: true, alpha: true"
+  >
+    <a-assets>
+      <a-asset-item id="catModel" src="cat.glb"></a-asset-item>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0" id="marker-target">
+      <a-gltf-model id="model" src="#catModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="0 180 0"></a-gltf-model>
+    </a-entity>
+  </a-scene>
+
+  <div id="controls">
+    <strong>調整模型位置 / 旋轉 / 大小</strong>
+
+    <label for="posX">位置 X</label>
+    <input type="range" id="posX" min="-1" max="1" step="0.01" value="0">
+
+    <label for="posY">位置 Y</label>
+    <input type="range" id="posY" min="-1" max="1" step="0.01" value="0">
+
+    <label for="posZ">位置 Z</label>
+    <input type="range" id="posZ" min="-1" max="1" step="0.01" value="0">
+
+    <label for="rotX">旋轉 X (度)</label>
+    <input type="range" id="rotX" min="0" max="360" step="1" value="0">
+
+    <label for="rotY">旋轉 Y (度)</label>
+    <input type="range" id="rotY" min="0" max="360" step="1" value="180">
+
+    <label for="rotZ">旋轉 Z (度)</label>
+    <input type="range" id="rotZ" min="0" max="360" step="1" value="0">
+
+    <label for="scale">大小 (等比縮放)</label>
+    <input type="range" id="scale" min="0.01" max="1" step="0.01" value="0.2">
+  </div>
+
+  <script>
+    const model = document.getElementById('model');
+
+    const posX = document.getElementById('posX');
+    const posY = document.getElementById('posY');
+    const posZ = document.getElementById('posZ');
+    const rotX = document.getElementById('rotX');
+    const rotY = document.getElementById('rotY');
+    const rotZ = document.getElementById('rotZ');
+    const scale = document.getElementById('scale');
+
+    function updateModel() {
+      model.setAttribute('position', `${posX.value} ${posY.value} ${posZ.value}`);
+      model.setAttribute('rotation', `${rotX.value} ${rotY.value} ${rotZ.value}`);
+      model.setAttribute('scale', `${scale.value} ${scale.value} ${scale.value}`);
+    }
+
+    posX.addEventListener('input', updateModel);
+    posY.addEventListener('input', updateModel);
+    posZ.addEventListener('input', updateModel);
+    rotX.addEventListener('input', updateModel);
+    rotY.addEventListener('input', updateModel);
+    rotZ.addEventListener('input', updateModel);
+    scale.addEventListener('input', updateModel);
+  </script>
+</body>
+</html>
