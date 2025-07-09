@@ -18,10 +18,14 @@
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
     }
     #controls label {
-      display: block; margin: 8px 0 4px;
+      display: block; margin: 8px 0 2px;
     }
     #controls input[type=range] {
       width: 100%;
+    }
+    .value-display {
+      font-size: 12px; color: #444; margin-bottom: 6px;
+      user-select: text;
     }
   </style>
 </head>
@@ -49,24 +53,31 @@
 
     <label for="posX">位置 X</label>
     <input type="range" id="posX" min="-1" max="1" step="0.01" value="0">
+    <div class="value-display" id="posX_val">0</div>
 
     <label for="posY">位置 Y</label>
     <input type="range" id="posY" min="-1" max="1" step="0.01" value="0">
+    <div class="value-display" id="posY_val">0</div>
 
     <label for="posZ">位置 Z</label>
     <input type="range" id="posZ" min="-1" max="1" step="0.01" value="0">
+    <div class="value-display" id="posZ_val">0</div>
 
     <label for="rotX">旋轉 X (度)</label>
     <input type="range" id="rotX" min="0" max="360" step="1" value="0">
+    <div class="value-display" id="rotX_val">0</div>
 
     <label for="rotY">旋轉 Y (度)</label>
     <input type="range" id="rotY" min="0" max="360" step="1" value="180">
+    <div class="value-display" id="rotY_val">180</div>
 
     <label for="rotZ">旋轉 Z (度)</label>
     <input type="range" id="rotZ" min="0" max="360" step="1" value="0">
+    <div class="value-display" id="rotZ_val">0</div>
 
     <label for="scale">大小 (等比縮放)</label>
     <input type="range" id="scale" min="0.01" max="1" step="0.01" value="0.2">
+    <div class="value-display" id="scale_val">0.20</div>
   </div>
 
   <script>
@@ -80,12 +91,31 @@
     const rotZ = document.getElementById('rotZ');
     const scale = document.getElementById('scale');
 
+    // 對應顯示數值元素
+    const posX_val = document.getElementById('posX_val');
+    const posY_val = document.getElementById('posY_val');
+    const posZ_val = document.getElementById('posZ_val');
+    const rotX_val = document.getElementById('rotX_val');
+    const rotY_val = document.getElementById('rotY_val');
+    const rotZ_val = document.getElementById('rotZ_val');
+    const scale_val = document.getElementById('scale_val');
+
     function updateModel() {
       model.setAttribute('position', `${posX.value} ${posY.value} ${posZ.value}`);
       model.setAttribute('rotation', `${rotX.value} ${rotY.value} ${rotZ.value}`);
       model.setAttribute('scale', `${scale.value} ${scale.value} ${scale.value}`);
+
+      // 更新顯示數值
+      posX_val.textContent = posX.value;
+      posY_val.textContent = posY.value;
+      posZ_val.textContent = posZ.value;
+      rotX_val.textContent = rotX.value;
+      rotY_val.textContent = rotY.value;
+      rotZ_val.textContent = rotZ.value;
+      scale_val.textContent = parseFloat(scale.value).toFixed(2);
     }
 
+    // 監聽 slider 事件
     posX.addEventListener('input', updateModel);
     posY.addEventListener('input', updateModel);
     posZ.addEventListener('input', updateModel);
@@ -93,6 +123,9 @@
     rotY.addEventListener('input', updateModel);
     rotZ.addEventListener('input', updateModel);
     scale.addEventListener('input', updateModel);
+
+    // 初始更新一次，確保顯示數值同步
+    updateModel();
   </script>
 </body>
 </html>
