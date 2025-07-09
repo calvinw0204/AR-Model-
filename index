@@ -11,14 +11,14 @@
       margin: 0; padding: 0; height: 100%; overflow: hidden; background: transparent;
     }
     #controls {
-      position: fixed; bottom: 10px; left: 10px; background: rgba(255,255,255,0.8);
-      padding: 10px; border-radius: 6px; max-width: 320px;
+      position: fixed; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9);
+      padding: 10px; border-radius: 8px; max-width: 320px;
       font-family: sans-serif; font-size: 14px;
-      user-select: none;
-      z-index: 9999;
+      user-select: none; z-index: 9999;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
     }
     #controls label {
-      display: block; margin: 6px 0 2px;
+      display: block; margin: 8px 0 4px;
     }
     #controls input[type=range] {
       width: 100%;
@@ -34,13 +34,13 @@
     renderer="colorManagement: true, physicallyCorrectLights: true, alpha: true"
   >
     <a-assets>
-      <a-asset-item id="catModel" src="cat.glb"></a-asset-item>
+      <a-asset-item id="model" src="cat.glb"></a-asset-item>
     </a-assets>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity mindar-image-target="targetIndex: 0" id="marker-target">
-      <a-gltf-model id="model" src="#catModel" position="0 0 0" scale="0.2 0.2 0.2" rotation="0 180 0"></a-gltf-model>
+    <a-entity mindar-image-target="targetIndex: 0" id="marker">
+      <a-gltf-model id="arModel" src="#model" position="0 0 0" rotation="0 180 0" scale="0.2 0.2 0.2"></a-gltf-model>
     </a-entity>
   </a-scene>
 
@@ -70,7 +70,7 @@
   </div>
 
   <script>
-    const model = document.getElementById('model');
+    const model = document.getElementById('arModel');
 
     const posX = document.getElementById('posX');
     const posY = document.getElementById('posY');
