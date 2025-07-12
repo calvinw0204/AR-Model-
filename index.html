@@ -5,6 +5,7 @@
   <title>AR Model 調整器</title>
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.css" />
   <style>
     html, body {
@@ -20,12 +21,21 @@
     #controls label {
       display: block; margin: 8px 0 2px;
     }
-    #controls input[type=range] {
+    #controls input[type=range], #controls input[type=text] {
       width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
     .value-display {
       font-size: 12px; color: #444; margin-bottom: 6px;
       user-select: text;
+    }
+    #textInputLabel {
+      margin-top: 12px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -41,10 +51,22 @@
       <a-asset-item id="model" src="cat.glb"></a-asset-item>
     </a-assets>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-camera id="camera" position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0" id="marker">
       <a-gltf-model id="arModel" src="#model" position="0 0 0" rotation="0 180 0" scale="0.2 0.2 0.2"></a-gltf-model>
+      
+      <!-- 新增文字框 -->
+      <a-text id="arText"
+        value="請輸入文字"
+        color="#fff"
+        align="center"
+        width="1.5"
+        position="0 0.3 0"
+        rotation="0 180 0"
+        wrap-count="30"
+        >
+      </a-text>
     </a-entity>
   </a-scene>
 
@@ -78,6 +100,10 @@
     <label for="scale">大小 (等比縮放)</label>
     <input type="range" id="scale" min="0.01" max="1" step="0.01" value="0.2">
     <div class="value-display" id="scale_val">0.20</div>
+
+    <!-- 新增文字輸入框 -->
+    <label id="textInputLabel" for="textInput">AR 文字框內容</label>
+    <input type="text" id="textInput" placeholder="輸入想顯示的文字" value="請輸入文字">
   </div>
 
   <script>
@@ -91,7 +117,6 @@
     const rotZ = document.getElementById('rotZ');
     const scale = document.getElementById('scale');
 
-    // 對應顯示數值元素
     const posX_val = document.getElementById('posX_val');
     const posY_val = document.getElementById('posY_val');
     const posZ_val = document.getElementById('posZ_val');
@@ -100,12 +125,15 @@
     const rotZ_val = document.getElementById('rotZ_val');
     const scale_val = document.getElementById('scale_val');
 
+    // 文字框
+    const arText = document.getElementById('arText');
+    const textInput = document.getElementById('textInput');
+
     function updateModel() {
       model.setAttribute('position', `${posX.value} ${posY.value} ${posZ.value}`);
       model.setAttribute('rotation', `${rotX.value} ${rotY.value} ${rotZ.value}`);
       model.setAttribute('scale', `${scale.value} ${scale.value} ${scale.value}`);
 
-      // 更新顯示數值
       posX_val.textContent = posX.value;
       posY_val.textContent = posY.value;
       posZ_val.textContent = posZ.value;
@@ -115,7 +143,11 @@
       scale_val.textContent = parseFloat(scale.value).toFixed(2);
     }
 
-    // 監聽 slider 事件
+    // 文字即時更新
+    textInput.addEventListener('input', () => {
+      arText.setAttribute('value', textInput.value);
+    });
+
     posX.addEventListener('input', updateModel);
     posY.addEventListener('input', updateModel);
     posZ.addEventListener('input', updateModel);
@@ -124,7 +156,7 @@
     rotZ.addEventListener('input', updateModel);
     scale.addEventListener('input', updateModel);
 
-    // 初始更新一次，確保顯示數值同步
+    // 初始顯示更新
     updateModel();
   </script>
 </body>
