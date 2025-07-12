@@ -2,7 +2,7 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8" />
-  <title>AR Model 調整器</title>
+  <title>AR Model 調整器（Enter 送出文字）</title>
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
 
@@ -10,32 +10,51 @@
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%; overflow: hidden; background: transparent;
+      font-family: sans-serif;
     }
-    #controls {
-      position: fixed; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9);
-      padding: 10px; border-radius: 8px; max-width: 320px;
-      font-family: sans-serif; font-size: 14px;
-      user-select: none; z-index: 9999;
+    #modelControls {
+      position: fixed; bottom: 10px; left: 10px; width: 320px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px; border-radius: 8px;
+      font-size: 14px; user-select: none;
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      max-height: 50vh; overflow-y: auto;
+      z-index: 9999;
     }
-    #controls label {
+    #modelControls label {
       display: block; margin: 8px 0 2px;
     }
-    #controls input[type=range], #controls input[type=text] {
+    #modelControls input[type=range] {
       width: 100%;
-      box-sizing: border-box;
-      padding: 6px 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
     }
     .value-display {
       font-size: 12px; color: #444; margin-bottom: 6px;
       user-select: text;
     }
-    #textInputLabel {
-      margin-top: 12px;
+    #textControls {
+      position: fixed; bottom: 10px; right: 10px; width: 320px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px; border-radius: 8px;
+      font-size: 14px; user-select: none;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      max-height: 50vh; overflow-y: auto;
+      z-index: 9999;
+    }
+    #textControls label {
       font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+    #textInput {
+      width: 100%;
+      height: 120px;
+      font-size: 14px;
+      padding: 6px 8px;
+      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: monospace, monospace;
     }
   </style>
 </head>
@@ -56,7 +75,7 @@
     <a-entity mindar-image-target="targetIndex: 0" id="marker">
       <a-gltf-model id="arModel" src="#model" position="0 0 0" rotation="0 180 0" scale="0.2 0.2 0.2"></a-gltf-model>
       
-      <!-- 新增文字框 -->
+      <!-- 文字框 -->
       <a-text id="arText"
         value="請輸入文字"
         color="#fff"
@@ -70,7 +89,8 @@
     </a-entity>
   </a-scene>
 
-  <div id="controls">
+  <!-- 模型調整控制區 -->
+  <div id="modelControls">
     <strong>調整模型位置 / 旋轉 / 大小</strong>
 
     <label for="posX">位置 X</label>
@@ -100,10 +120,12 @@
     <label for="scale">大小 (等比縮放)</label>
     <input type="range" id="scale" min="0.01" max="1" step="0.01" value="0.2">
     <div class="value-display" id="scale_val">0.20</div>
+  </div>
 
-    <!-- 新增文字輸入框 -->
-    <label id="textInputLabel" for="textInput">AR 文字框內容</label>
-    <input type="text" id="textInput" placeholder="輸入想顯示的文字" value="請輸入文字">
+  <!-- 文字輸入控制區 -->
+  <div id="textControls">
+    <label for="textInput">AR 文字框內容（按 Enter 送出）</label>
+    <textarea id="textInput" placeholder="輸入留言，按 Enter 即送出文字"></textarea>
   </div>
 
   <script>
@@ -125,7 +147,6 @@
     const rotZ_val = document.getElementById('rotZ_val');
     const scale_val = document.getElementById('scale_val');
 
-    // 文字框
     const arText = document.getElementById('arText');
     const textInput = document.getElementById('textInput');
 
@@ -143,9 +164,17 @@
       scale_val.textContent = parseFloat(scale.value).toFixed(2);
     }
 
-    // 文字即時更新
-    textInput.addEventListener('input', () => {
-      arText.setAttribute('value', textInput.value);
+    // 文字框 Enter 送出事件
+    textInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // 阻止換行
+        const value = textInput.value.trim();
+        if (value.length > 0) {
+          arText.setAttribute('value', value);
+          // 想清空輸入框可以取消以下註解：
+          // textInput.value = '';
+        }
+      }
     });
 
     posX.addEventListener('input', updateModel);
@@ -156,7 +185,6 @@
     rotZ.addEventListener('input', updateModel);
     scale.addEventListener('input', updateModel);
 
-    // 初始顯示更新
     updateModel();
   </script>
 </body>
